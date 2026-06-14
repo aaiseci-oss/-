@@ -242,7 +242,7 @@
                         </form>
                     </div>
 
-                    <!-- Audio Helper -->
+                                        <!-- Audio Helper -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold quran-theme-text mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
                             <i class="fa-solid fa-volume-high text-emerald-700"></i>
@@ -275,11 +275,46 @@
                         </div>
                     </div>
 
+                    <!-- Gemini AI Assistant -->
+                    <div class="bg-gradient-to-br from-emerald-900 to-teal-950 rounded-2xl p-6 shadow-xl border-t-4 quran-gold-border text-white relative overflow-hidden">
+                        <div class="relative">
+                            <h3 class="text-lg font-bold quran-gold mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>المساعد الذكي للحفظ والتدبر ✨</span>
+                            </h3>
+                            <p class="text-xs text-emerald-100 mb-4">يعتمد المساعد على السورة والآية المحددة في مشغل الصوت أعلاه لتسهيل معاهدة أورادك.</p>
+
+                            <div class="grid grid-cols-1 gap-2.5">
+                                <button onclick="generateAITafsir()" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-between border border-emerald-700">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-comment-dots text-amber-400"></i> تدبر وفهم وتفسير الآية المحددة</span>
+                                    <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
+                                </button>
+                                <button onclick="generateAIMutashabihat()" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-between border border-emerald-700">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-clone text-amber-400"></i> كشف متشابهات اللفظ وضبطها</span>
+                                    <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
+                                </button>
+                                <button onclick="generateAISurahTips()" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-between border border-emerald-700">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-lightbulb text-amber-400"></i> تقسيمات ونقاط ذهبية للسورة</span>
+                                    <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
+                                </button>
+                            </div>
+
+                            <div id="ai-output-panel" class="hidden mt-4 bg-emerald-950/80 rounded-xl p-4 border border-emerald-800 relative">
+                                <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-emerald-800/60">
+                                    <span class="text-xs font-bold text-amber-400" id="ai-output-title">التحليل الإرشادي</span>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="copyAIResult()" class="text-[10px] text-emerald-300 bg-emerald-900 px-2 py-1 rounded hover:text-white">نسخ</button>
+                                        <button onclick="closeAIOutput()" class="text-xs text-emerald-400 hover:text-white">&times;</button>
+                                    </div>
+                                </div>
+                                <div id="ai-output-content" class="text-xs text-gray-100 leading-relaxed overflow-y-auto max-h-60 space-y-2 select-text font-medium"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Left Column (2/3): Table Schedule & Notebook -->
                 <div class="lg:col-span-2 space-y-6">
-                    
                     <!-- Table Schedule Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-6 pb-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
@@ -288,7 +323,7 @@
                                     <i class="fa-solid fa-calendar-days text-emerald-700"></i>
                                     <span>الجدول التفاعلي لمهام الأسبوع</span>
                                 </h3>
-                                <p class="text-xs text-gray-500 mt-1">يعتمد الجدول على التقسيم الذكي للمقادير (ما عدا التحضير والختمة)</p>
+                                <p class="text-xs text-gray-500 mt-1">توضح هذه الخلاصة مواضع الانطلاق المحددة بالآيات أو الأرباع أو الأحزاب</p>
                             </div>
                             <div class="flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-lg text-emerald-900 text-sm font-semibold">
                                 <i class="fa-solid fa-star text-amber-500"></i>
@@ -324,7 +359,7 @@
                             <button onclick="clearNotes()" class="text-xs text-red-600 hover:underline">مسح المفكرة</button>
                         </div>
                         <div class="space-y-4">
-                            <textarea id="user-notes" rows="4" class="w-full p-3 bg-amber-50/40 border border-amber-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-400 font-medium text-gray-800" placeholder="اكتب هنا آيات صعبة أو متشابهات لحفظها وتدوينها..."></textarea>
+                            <textarea id="user-notes" rows="4" class="w-full p-3 bg-amber-50/40 border border-amber-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-400 font-medium text-gray-800" placeholder="اكتب هنا آيات صعبة أو متشابهات أو الصق نتائج المساعد الذكي..."></textarea>
                             <div class="flex justify-end">
                                 <button onclick="saveNotes()" class="bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2">
                                     <i class="fa-solid fa-floppy-disk"></i>
