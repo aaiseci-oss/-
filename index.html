@@ -352,7 +352,7 @@
         <i class="fa-solid fa-headset text-xl"></i>
     </button>
 
-    <!-- CONTACT US MODAL -->
+    <!-- CONTACT US MODAL (UPDATED - ONLY GOOGLE FORM) -->
     <div id="contact-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl transform transition-all">
             <div class="bg-gradient-to-r from-emerald-800 to-emerald-600 p-5 text-white flex justify-between items-center border-b-4 border-emerald-400 font-bold">
@@ -364,9 +364,10 @@
             </div>
             <div class="p-6 text-center space-y-4">
                 <p class="text-sm text-gray-600 leading-relaxed mb-6">
-                    يسعدنا جداً استقبال مقترحاتكم، أفكاركم، واستفساراتكم لتطوير هذه المنصة وجعلها الخادم الأمثل لحفاظ كتاب الله. يمكنكم التواصل معنا عبر القنوات التالية:
-                <!-- 3. Google Form Button -->
-                <a href="https://https://forms.gle/8z1ANnH6F8jDAwY67" target="_blank" class="w-full flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition shadow-sm">
+                    يسعدنا جداً استقبال مقترحاتكم، أفكاركم، واستفساراتكم لتطوير هذه المنصة وجعلها الخادم الأمثل لحفاظ كتاب الله. يمكنكم إرسال مقترحاتكم عبر النموذج التالي:
+                </p>
+                <!-- Only Google Form Button Kept -->
+                <a href="https://forms.gle/DvjG7WHUwJyCCrNw7" target="_blank" class="w-full flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition shadow-sm">
                     <i class="fa-solid fa-list-check text-xl"></i>
                     <span>تعبئة نموذج المقترحات</span>
                 </a>
@@ -610,7 +611,6 @@
             quranHizbs.push(`حزب ${i + 1}: ${cleanText}`);
         }
 
-        // Generate Start Point UI blocks for 5 Forts
         function renderStartPointBlocks() {
             const container = document.getElementById('sp-blocks-container');
             let html = '';
@@ -632,7 +632,7 @@
                         </select>
                     </div>
                     
-                    <div id="${fId}-surah-box" class="grid grid-cols-2 gap-2">
+                    <div id="${fId}-surah-box" class="grid grid-cols-2 gap-2 hidden">
                         <select id="setup-${fId}-surah" class="border rounded p-2 text-xs font-bold bg-white w-full custom-dropdown-surah"></select>
                         <input type="number" id="setup-${fId}-ayah" min="1" placeholder="رقم الآية" class="border rounded p-2 text-xs text-center font-bold bg-white">
                     </div>
@@ -653,7 +653,6 @@
             container.innerHTML = html;
         }
 
-        // Setup UI Toggles
         function toggleFType(fId) {
             const type = document.getElementById(`setup-${fId}-type`).value;
             const boxes = ['surah', 'page', 'quarter', 'hizb', 'juz'];
@@ -712,7 +711,7 @@
                     f4: { type: "quarter", surahNum: 1, ayahNum: 1, pageNum: 1, quarterIdx: 0, hizbIdx: 0, juzNum: 1 },
                     f5: { type: "juz", surahNum: 1, ayahNum: 1, pageNum: 1, quarterIdx: 0, hizbIdx: 0, juzNum: 1 }
                 },
-                startDateString: "2026-06-13", 
+                startDateString: "2026-06-13", // SATURDAY 13 JUNE 2026
                 activeDays: {
                     Saturday: true, Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true
                 }
@@ -745,7 +744,7 @@
         }
 
         function loadSavedData() {
-            const savedState = localStorage.getItem('five_forts_ultimate_v3');
+            const savedState = localStorage.getItem('five_forts_fixed_dates_v1');
             if (savedState) {
                 try {
                     const parsed = JSON.parse(savedState);
@@ -764,7 +763,7 @@
 
         function saveData() {
             state.notes = document.getElementById('user-notes').value;
-            localStorage.setItem('five_forts_ultimate_v3', JSON.stringify(state));
+            localStorage.setItem('five_forts_fixed_dates_v1', JSON.stringify(state));
         }
 
         function getArabicUnitName(unit, qty) {
@@ -778,20 +777,21 @@
             return map[day] || day;
         }
 
-        // ================= CONTACT MODAL =================
         function openContactModal() { document.getElementById('contact-modal').classList.remove('hidden'); }
         function closeContactModal() { document.getElementById('contact-modal').classList.add('hidden'); }
 
-        // ================= CORE LOGIC =================
+        // ================= CORE CALCULATIONS (FIXED TIMEZONE BUG) =================
         function calculateTargets() {
             const list = [];
             const daysOrder = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-            const startOfWeekDate = new Date(state.config.startDateString);
+            
+            // FIX: Parsing manually to avoid Timezone offset bug
+            const dateParts = state.config.startDateString.split('-');
+            const startOfWeekDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
             
             const activeDaysMap = state.config.activeDays;
             const activeDaysCount = Object.values(activeDaysMap).filter(Boolean).length || 1;
 
-            // Deep clone tracking to prevent mutating original state during render
             let trackingValues = JSON.parse(JSON.stringify(state.config.startPoints));
 
             daysOrder.forEach((dayId, index) => {
@@ -815,13 +815,13 @@
                     if (isDivided) {
                         dailyVal = fort.target / activeDaysCount;
                     } else {
-                        dailyVal = fort.target; // F2 and F5 take full target
+                        dailyVal = fort.target; 
                     }
 
-                    let isStatic = (fId === 'f2'); // Preparation doesn't increment the tracker
+                    let isStatic = (fId === 'f2');
 
-                    if (row.isActive || fId === 'f5') { // F5 might be every day, or just active days
-                        if (!row.isActive && fId !== 'f5') return; // Only process active days for non-F5
+                    if (row.isActive || fId === 'f5') {
+                        if (!row.isActive && fId !== 'f5') return;
 
                         row.rawTargets[fId] = dailyVal;
                         let sp = trackingValues[fId];
@@ -947,7 +947,6 @@
 
             ['f1', 'f2', 'f3', 'f4', 'f5'].forEach(fId => {
                 const fort = forts[fId];
-                // Display calculations for cards (just visual summaries)
                 const isDaily = (fId === 'f2' || fId === 'f5');
                 const totalTarget = isDaily ? fort.target * 7 : fort.target;
                 const done = progressCounts[fId];
@@ -1162,6 +1161,21 @@
             return text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400 font-semibold">$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em class="text-amber-200">$1</em>')
                 .replace(/- (.*?)(<br>|$)/g, '<div class="flex items-start gap-1.5 my-1 text-gray-200"><span class="text-amber-400">•</span><span>$1</span></div>');
+        }
+
+        function copyAIResult() {
+            const content = document.getElementById('ai-output-content');
+            const temp = document.createElement("textarea");
+            temp.value = content.innerText;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showNotification("تم النسخ", "تم نسخ النتيجة إلى الحافظة.");
+            } catch (err) {
+                showNotification("فشل النسخ", "يرجى النسخ يدوياً.");
+            }
+            document.body.removeChild(temp);
         }
 
         function closeAIOutput() { document.getElementById('ai-output-panel').classList.add('hidden'); }
